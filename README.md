@@ -13,7 +13,7 @@ When I started trying out Zed the first thing I missed was dired's file picker, 
 
 ## Demo
 
-
+![demo](./zed-fuzzel-filepicker.gif)
 
 ## Requirements
 
