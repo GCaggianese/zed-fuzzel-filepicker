@@ -1,0 +1,27 @@
+#!/bin/bash
+# ~/.local/bin/fuzzel-file-picker
+pick_file() {
+    local dir=$(realpath "${1:-.}")
+    # Build the list: parent (..) + contents
+    local selected=$(
+        {
+            echo ".."
+            fd . "$dir" --max-depth 1 --hidden --exclude .git | sed "s|^$dir/||"
+        } | fuzzel --dmenu --prompt "$(basename "$dir")/" --lines 20
+    )
+    # Exit if cancelled
+    [ -z "$selected" ] && return 1
+    # Resolve path (handles .. and duplicate slashes)
+    if [ "$selected" = ".." ]; then
+        local full_path=$(realpath "$dir/..")
+    else
+        local full_path=$(realpath "$dir/$selected")
+    fi
+    # Recurse into dirs, output files
+    if [ -d "$full_path" ]; then
+        pick_file "$full_path"
+    else
+        zeditor $full_path
+    fi
+}
+pick_file "$@"
